@@ -1,0 +1,86 @@
+# ┌─────────────────────────────────────────────────────────────────────────┐
+# │  application.yaml — Configuración central de la aplicación              │
+# │                                                                         │
+# │  IMPORTANTE PARA PRODUCCIÓN:                                            │
+# │  Los valores sensibles (passwords, secrets) NUNCA deben estar           │
+# │  hardcodeados aquí en producción. Usar variables de entorno:           │
+# │     password: ${DB_PASSWORD}                                            │
+# │     secret: ${JWT_SECRET}                                               │
+# │  Y definirlas en el servidor o en un vault de secretos.                 │
+# └─────────────────────────────────────────────────────────────────────────┘
+
+# ── SPRING BOOT ──────────────────────────────────────────────────────────────
+spring:
+
+  # ── NOMBRE DE LA APLICACIÓN ───────────────────────────────────────────────
+  application:
+    name: login
+
+  # ── BASE DE DATOS (CONFIGURADA PARA XAMPP) ─────────────────────────────────
+  datasource:
+    # URL de conexión JDBC a MySQL.
+    # Conservamos 'createDatabaseIfNotExist=true' para que Spring cree la base de datos 'electoral_db' automáticamente en tu XAMPP si no existe.
+    url: jdbc:mysql://localhost:3306/electoral_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+
+    # Credenciales estándar de XAMPP: usuario 'root' y contraseña vacía
+    username: root
+    password: 
+
+    # Driver JDBC explícito.
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    # Pool de conexiones HikariCP
+    hikari:
+      maximum-pool-size: 10
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: ElectoralHikariPool
+
+  # ── JPA / HIBERNATE ────────────────────────────────────────────────────────
+  jpa:
+    hibernate:
+      # 'update' creará las tablas de tu entidad UserEntity automáticamente en XAMPP
+      ddl-auto: update
+
+    show-sql: true
+
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  # ── JACKSON (Serialización JSON) ───────────────────────────────────────────
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+# ── JWT ──────────────────────────────────────────────────────────────────────
+jwt:
+  secret: dGhpcy1pcy1hLXZlcnktc2VjcmV0LWtleS1mb3ItaHMtMjU2LWFsZ29yaXRobQ==
+  expiration: 86400000
+
+# ── SPRINGDOC OPENAPI (Swagger) ───────────────────────────────────────────────
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    doc-expansion: none
+    display-request-duration: true
+  api-docs:
+    path: /v3/api-docs
+
+# ── SERVIDOR ──────────────────────────────────────────────────────────────────
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# ── LOGGING ───────────────────────────────────────────────────────────────────
+logging:
+  level:
+    com.login: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
